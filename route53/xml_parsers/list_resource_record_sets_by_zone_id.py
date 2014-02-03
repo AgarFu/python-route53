@@ -8,6 +8,7 @@ RRSET_TAG_TO_KWARG_MAP = {
     'Weight': 'weight',
     'Region': 'region',
     'SetIdentifier': 'set_identifier',
+    'HealthCheckID': 'health_check',
 }
 
 # Maps the various ResourceRecordSet Types to various RRSet subclasses.
