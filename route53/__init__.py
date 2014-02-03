@@ -21,8 +21,11 @@ def connect(aws_access_key_id=None, aws_secret_access_key=None, **kwargs):
     :return: A connection to Amazon's Route 53
     """
 
-    from route53.connection import Route53Connection
-    return Route53Connection(
+    if 'connectionClass' not in kwargs or kwargs['connectionClass'] is None:
+        from route53.connection import Route53Connection
+        connectionClass = Route53Connection
+
+    return connectionClass(
         aws_access_key_id,
         aws_secret_access_key,
         **kwargs

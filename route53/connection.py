@@ -2,7 +2,6 @@ from lxml import etree
 from route53 import xml_parsers, xml_generators
 from route53.exceptions import Route53Error
 from route53.transport import RequestsTransport
-#from route53.util import prettyprint_xml
 from route53.xml_parsers.common_change_info import parse_change_info
 
 class Route53Connection(object):
@@ -19,7 +18,7 @@ class Route53Connection(object):
     endpoint_version = '2012-02-29'
     """The date-based API version. Mostly visible for your reference."""
 
-    def __init__(self, aws_access_key_id, aws_secret_access_key):
+    def __init__(self, aws_access_key_id, aws_secret_access_key, **kwargs):
         """
         :param str aws_access_key_id: An account's access key ID.
         :param str aws_secret_access_key: An account's secret access key.
@@ -29,7 +28,10 @@ class Route53Connection(object):
         self._xml_namespace = 'https://route53.amazonaws.com/doc/%s/' % self.endpoint_version
         self._aws_access_key_id = aws_access_key_id
         self._aws_secret_access_key = aws_secret_access_key
-        self._transport = RequestsTransport(self)
+        if 'transport_class' not in kwargs or kwargs['transport_class'] is None:
+            self._transport = RequestsTransport(self)
+        else:
+            self._transport = kwargs['transport_class'](self)
 
     def _send_request(self, path, data, method):
         """
@@ -47,7 +49,6 @@ class Route53Connection(object):
 
         response_body = self._transport.send_request(path, data, method)
         root = etree.fromstring(response_body)
-        #print(prettyprint_xml(root))
         return root
 
     def _do_autopaginating_api_call(self, path, params, method, parser_func,
@@ -303,10 +304,130 @@ class Route53Connection(object):
             method='POST',
         )
 
-        #print(prettyprint_xml(root))
-
         e_change_info = root.find('./{*}ChangeInfo')
         if e_change_info is None:
             error = root.find('./{*}Error').find('./{*}Message').text
             raise Route53Error(error)
         return parse_change_info(e_change_info)
+
+    def list_health_checks(self, page_chunks=100):
+        """
+        List all health checks associated with this connection's account. Since
+        this method returns a generator, you can pull as many or as few
+        entries as you'd like, without having to query and receive every
+        hosted zone you may have.
+
+        :keyword int page_chunks: This API call is "paginated" behind-the-scenes
+            in order to break up large result sets. This number determines
+            the maximum number of
+            :py:class:`HostedZone <route53.hosted_zone.HostedZone>`
+            instances to retrieve per request. The default is fine for almost
+            everyone.
+
+        :rtype: generator
+        :returns: A generator of :py:class:`HostedZone <route53.hosted_zone.HostedZone>`
+            instances.
+        """
+
+        return  self._do_autopaginating_api_call(
+            path='healthcheck',
+            params={'maxitems': page_chunks},
+            method='GET',
+            parser_func=xml_parsers.list_health_checks_parser,
+            next_marker_xpath="./{*}NextMarker",
+            next_marker_param_name="marker",
+        )
+
+    def create_health_check(self, ipaddress, port, type, resource_path, fqdn, search_string, caller_reference=None):
+        """
+        Creates and returns a new hosted zone. Once a hosted zone is created,
+        its details can't be changed.
+
+        :param str name: The name of the hosted zone to create.
+        :keyword str caller_reference: A unique string that identifies the
+            request and that allows failed create_health_check requests to be
+            retried without the risk of executing the operation twice. If no
+            value is given, we'll generate a Type 4 UUID for you.
+        :keyword str comment: An optional comment to attach to the zone.
+        :rtype: tuple
+        :returns: A tuple in the form of ``(hosted_zone, change_info)``.
+            The ``hosted_zone`` variable contains a
+            :py:class:`HostedZone <route53.hosted_zone.HostedZone>`
+            instance matching the newly created zone, and ``change_info``
+            is a dict with some details about the API request.
+        """
+
+        body = xml_generators.create_health_check_writer(
+            connection=self,
+            caller_reference=caller_reference,
+            ipaddress=ipaddress,
+            port=port,
+            type=type,
+            resource_path=resource_path,
+            fqdn=fqdn,
+            search_string=search_string
+        )
+
+
+        root = self._send_request(
+            path='healthcheck',
+            data=body,
+            method='POST',
+        )
+
+        return xml_parsers.created_health_check_parser(
+            root=root,
+            connection=self
+        )
+
+    def get_health_check_by_id(self, id):
+        """
+        Retrieves a hosted zone, by hosted zone ID (not name).
+
+        :param str id: The hosted zone's ID (a short hash string).
+        :rtype: :py:class:`HostedZone <route53.hosted_zone.HostedZone>`
+        :returns: An :py:class:`HostedZone <route53.hosted_zone.HostedZone>`
+            instance representing the requested hosted zone.
+        """
+
+        root = self._send_request(
+            path='healthcheck/%s' % id,
+            data={},
+            method='GET',
+        )
+
+        return xml_parsers.get_health_check_by_id_parser(
+            root=root,
+            connection=self,
+        )
+
+    def delete_health_check_by_id(self, id):
+        """
+        Deletes a hosted zone, by hosted zone ID (not name).
+
+        .. tip:: For most cases, we recommend deleting hosted zones via a
+            :py:class:`HostedZone <route53.hosted_zone.HostedZone>`
+            instance's
+            :py:meth:`HostedZone.delete <route53.hosted_zone.HostedZone.delete>`
+            method, but this saves an HTTP request if you already know the zone's ID.
+
+        .. note:: Unlike
+            :py:meth:`HostedZone.delete <route53.hosted_zone.HostedZone.delete>`,
+            this method has no optional ``force`` kwarg.
+
+        :param str id: The hosted zone's ID (a short hash string).
+        :rtype: dict
+        :returns: A dict of change info, which contains some details about
+            the request.
+        """
+
+        root = self._send_request(
+            path='healthcheck/%s' % id,
+            data={},
+            method='DELETE',
+        )
+
+        return xml_parsers.delete_health_check_by_id_parser(
+            root=root,
+            connection=self,
+        )

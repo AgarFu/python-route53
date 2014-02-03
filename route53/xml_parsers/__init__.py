@@ -3,3 +3,7 @@ from .created_hosted_zone import created_hosted_zone_parser
 from .get_hosted_zone_by_id import get_hosted_zone_by_id_parser
 from .delete_hosted_zone_by_id import delete_hosted_zone_by_id_parser
 from .list_resource_record_sets_by_zone_id import list_resource_record_sets_by_zone_id_parser
+from .list_health_checks import list_health_checks_parser
+from .created_health_check import created_health_check_parser
+from .get_health_check_by_id import get_health_check_by_id_parser
+from .delete_health_check_by_id import delete_health_check_by_id_parser

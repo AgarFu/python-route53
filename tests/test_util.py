@@ -1,8 +1,7 @@
 import unittest
 
-from tests.test_basic import BaseTestCase
-
 from datetime import timedelta, datetime, tzinfo
+
 class UTC(tzinfo):
     """UTC"""
 
@@ -15,11 +14,11 @@ class UTC(tzinfo):
     def dst(self, dt):
         return timedelta(0)
 
-class UtilTestCase(BaseTestCase):
+class UtilTestCase(unittest.TestCase):
     """
     Tests utils
     """
-        
+
     def test_parse_iso_8601_time_str(self):
         """
         At times, Amazon hands us a timestamp with no microseconds.

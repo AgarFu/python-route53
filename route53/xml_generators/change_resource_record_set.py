@@ -79,6 +79,10 @@ def write_change(change):
         e_weight = etree.SubElement(e_rrset, "Region")
         e_weight.text = change_vals['region']
 
+    if change_vals.get('health_check'):
+        e_health_check_id = etree.SubElement(e_rrset, "HealthCheckID")
+        e_health_check_id.text = change_vals['health_check']
+
     e_ttl = etree.SubElement(e_rrset, "TTL")
     e_ttl.text = str(change_vals['ttl'])
 
