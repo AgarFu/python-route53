@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CreateHealthCheckResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+   <HealthCheck>
+      <Id>Amazon Route 53 hosted zone ID</Id>
+      <CallerReference>unique description</CallerReference>
+         <HealthCheckConfig>
+            <IPAddress>1.2.3.4</IPAddress>
+            <Port>80</Port>
+            <Type>HTTP|HTTPS|HTTP_STR_MATCH|HTTPS_STR_MATCH|TCP</Type>
+            <ResourcePath>/health_check.html</ResourcePath>
+            <FullyQualifiedDomainName>a.fqdn.foo.bar</FullyQualifiedDomainName>
+            <SearchString></SearchString>
+         </HealthCheckConfig>
+   </HealthCheck>
+</CreateHealthCheckResponse>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListHostedZonesResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/"> 
+   <HostedZones>
+      <HostedZone>
+         <Id>/hostedzone/Amazon Route 53 hosted zone ID</Id>
+         <Name>DNS domain name</Name>
+         <CallerReference>0</CallerReference>
+         <Config>
+            <Comment>comment that you specified when you created the hosted zone</Comment>
+         </Config>
+         <ResourceRecordSetCount>0</ResourceRecordSetCount>
+      </HostedZone>
+   </HostedZones>
+   <Marker>value of the marker parameter, if any, in the previous request</Marker>
+   <IsTruncated>false</IsTruncated>
+</ListHostedZonesResponse>
