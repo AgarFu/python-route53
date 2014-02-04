@@ -14,7 +14,7 @@ class ResourceRecordSet(object):
     rrset_type = None
 
     def __init__(self, connection, zone_id, name, ttl, records, weight=None,
-                 region=None, set_identifier=None, health_check=None):
+                 region=None, set_identifier=None, health_check=None, failover=None):
         """
         :param Route53Connection connection: The connection instance that
             was used to query the Route53 API, leading to this object's
@@ -46,7 +46,7 @@ class ResourceRecordSet(object):
         self.records = records
         self.region = region
         self.weight = weight
-        self.health_check = None
+        self.health_check = health_check
         self.set_identifier = set_identifier
 
         # Keep track of the initial values for this record set. We use this

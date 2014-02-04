@@ -1,6 +1,6 @@
 from io import BytesIO
 from lxml import etree
-from route53.util import prettyprint_xml
+#from route53.util import prettyprint_xml
 
 def get_change_values(change):
     """
@@ -26,6 +26,7 @@ def get_change_values(change):
             # Pull from the record set's attributes, which are the current
             # values.
             values[key] = getattr(rrset, key)
+
         return values
     else:
         # We can look at the initial values dict for deletions, since we
@@ -79,10 +80,6 @@ def write_change(change):
         e_weight = etree.SubElement(e_rrset, "Region")
         e_weight.text = change_vals['region']
 
-    if change_vals.get('health_check'):
-        e_health_check_id = etree.SubElement(e_rrset, "HealthCheckID")
-        e_health_check_id.text = change_vals['health_check']
-
     e_ttl = etree.SubElement(e_rrset, "TTL")
     e_ttl.text = str(change_vals['ttl'])
 
@@ -96,6 +93,11 @@ def write_change(change):
         e_resource_record = etree.SubElement(e_resource_records, "ResourceRecord")
         e_value = etree.SubElement(e_resource_record, "Value")
         e_value.text = value
+
+
+    if change_vals.get('health_check'):
+        e_health_check_id = etree.SubElement(e_rrset, "HealthCheckId")
+        e_health_check_id.text = change_vals['health_check']
 
     return e_change
 

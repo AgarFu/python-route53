@@ -34,7 +34,6 @@ class ChangeSet(object):
             raise Route53Error("action must be one of 'CREATE' or 'DELETE'")
 
         change_tuple = (action, record_set)
-
         if action == 'CREATE':
             self.creations.append(change_tuple)
         else:
