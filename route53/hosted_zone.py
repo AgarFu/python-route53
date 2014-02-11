@@ -180,7 +180,7 @@ class HostedZone(object):
 
     def create_a_record(self, name, values, ttl=60, weight=None, region=None,
                      set_identifier=None, alias_hosted_zone_id=None,
-                     alias_dns_name=None):
+                     alias_dns_name=None, health_check=None):
         """
         Creates and returns an A record attached to this hosted zone.
 
