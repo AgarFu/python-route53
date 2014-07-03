@@ -11,5 +11,6 @@
             <FullyQualifiedDomainName>a.fqdn.foo.bar</FullyQualifiedDomainName>
             <SearchString></SearchString>
          </HealthCheckConfig>
+         <HealthCheckVersion>1</HealthCheckVersion>
    </HealthCheck>
 </CreateHealthCheckResponse>
