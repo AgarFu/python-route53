@@ -11,6 +11,7 @@ HEALTH_CHECK_TAG_TO_KWARG_MAP = {
     'Id': 'id',
     'Name': 'name',
     'CallerReference': 'caller_reference',
+    'HealthCheckVersion': 'health_check_version',
 }
 
 def parse_health_check(e_healthcheck, connection):

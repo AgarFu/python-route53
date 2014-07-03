@@ -10,7 +10,7 @@ class HealthCheck(object):
         one of the methods on :py:class:`route53.connection.Route53Connection`.
     """
 
-    def __init__(self, connection, id, caller_reference, ipaddress, port, type, resource_path, fqdn, search_string=None):
+    def __init__(self, connection, id, caller_reference, ipaddress, port, type, resource_path, fqdn, search_string=None, health_check_version=1):
         """
         :param Route53Connection connection: The connection instance that
             was used to query the Route53 API, leading to this object's
